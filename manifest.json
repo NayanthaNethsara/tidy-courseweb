@@ -1,0 +1,11 @@
+{
+  "name": "TidyCourseweb",
+  "description": "A simple Chrome extension for Courseweb (Sliit Moodle platform) testing.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "host_permissions": ["https://courseweb.sliit.lk/*"],
+  "action": {
+    "default_popup": "hello.html",
+    "default_icon": "icon.png"
+  }
+}
