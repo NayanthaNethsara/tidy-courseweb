@@ -1,0 +1,192 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  width: 320px;
+  background: linear-gradient(135deg, #cccccc 0%, #666666 100%);
+  color: #222;
+  line-height: 1.5;
+}
+
+.container {
+  background: #fff;
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #b0b0b0 0%, #888888 100%);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.08"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.08"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.08"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.08"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.08"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  pointer-events: none;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.content {
+  padding: 20px;
+}
+
+#show-all {
+  width: 100%;
+  background: linear-gradient(135deg, #b0b0b0 0%, #888888 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(180, 180, 180, 0.3);
+}
+
+#show-all:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(180, 180, 180, 0.4);
+}
+
+#show-all:active {
+  transform: translateY(0);
+}
+
+#module-list {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: #f4f4f4;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+li:hover {
+  background: #e0e0e0;
+  border-color: #cccccc;
+  transform: translateX(4px);
+}
+
+.module-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.module-title.dim {
+  opacity: 0.5;
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+.tidy-toggle-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-left: 12px;
+  min-width: 60px;
+}
+
+.tidy-toggle-btn[title*="Hide"] {
+  background: linear-gradient(135deg, #bbbbbb 0%, #999999 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(180, 180, 180, 0.3);
+}
+
+.tidy-toggle-btn[title*="Show"] {
+  background: linear-gradient(135deg, #bbbbbb 0%, #888888 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(180, 180, 180, 0.3);
+}
+
+.tidy-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tidy-toggle-btn:active {
+  transform: translateY(0);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bbbbbb;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888888;
+}
+
+/* Animation for list items */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+li {
+  animation: slideIn 0.3s ease forwards;
+}
+
+li:nth-child(1) {
+  animation-delay: 0.1s;
+}
+li:nth-child(2) {
+  animation-delay: 0.2s;
+}
+li:nth-child(3) {
+  animation-delay: 0.3s;
+}
