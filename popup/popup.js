@@ -110,9 +110,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const contentDiv = document.querySelector(".content");
       if (contentDiv) {
         contentDiv.innerHTML = `
-          <div style="text-align:center; color:#666; padding:32px 0;">
+          <div style="text-align:center; color:#AAA; padding:32px 0;">
             <p><b>TidyCourseweb</b> works only on</p>
-            <p style="color:#555;">courseweb.sliit.lk</p>
+            <p style="color:#888;">courseweb.sliit.lk</p>
           </div>
         `;
       }
