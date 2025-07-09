@@ -7,10 +7,22 @@
   <body>
     <div class="container">
       <div class="header">
-        <h3>Your Modules</h3>
-        <div id="demo-string"></div>
+        <div class="header-icon">TC</div>
+        <h3>TidyCourseweb</h3>
       </div>
       <div class="content">
+        <div class="controls">
+          <select id="filter-select">
+            <option value="all">Show: All</option>
+            <option value="visible">Visible Only</option>
+            <option value="hidden">Hidden Only</option>
+          </select>
+          <select id="sort-select">
+            <option value="default">Sort: Original</option>
+            <option value="az">Sort: A–Z</option>
+            <option value="za">Sort: Z–A</option>
+          </select>
+        </div>
         <button id="show-all">Show All Modules</button>
         <ul id="module-list"></ul>
       </div>
