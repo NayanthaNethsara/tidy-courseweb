@@ -35,7 +35,7 @@ function applyHiddenModules(modules) {
     if (module && module.hidden) {
       link.parentElement.style.display = "none";
     } else {
-      link.parentElement.style.display = "flex";
+      link.parentElement.style.display = "";
     }
   });
 }
@@ -61,53 +61,53 @@ function syncModulesWithStorage() {
   });
 }
 
-function addToggleButtons() {
-  const coursesMenu = getCoursesMenu();
-  if (!coursesMenu) return;
-  const moduleLinks = getModuleLinks(coursesMenu);
+// function addToggleButtons() {
+//   const coursesMenu = getCoursesMenu();
+//   if (!coursesMenu) return;
+//   const moduleLinks = getModuleLinks(coursesMenu);
 
-  moduleLinks.forEach((link) => {
-    // Avoid adding the toggle multiple times
-    if (link.parentElement.querySelector(".tidy-toggle-btn")) return;
+//   moduleLinks.forEach((link) => {
+//     // Avoid adding the toggle multiple times
+//     if (link.parentElement.querySelector(".tidy-toggle-btn")) return;
 
-    const li = link.parentElement;
-    li.style.display = "flex";
-    li.style.alignItems = "center";
-    li.style.justifyContent = "space-between";
+//     const li = link.parentElement;
+//     li.style.display = "flex";
+//     li.style.alignItems = "center";
+//     li.style.justifyContent = "space-between";
 
-    // Create the toggle button
-    const toggleBtn = document.createElement("button");
-    toggleBtn.textContent = "Hide";
-    toggleBtn.className = "tidy-toggle-btn";
-    toggleBtn.style.marginLeft = "12px";
-    toggleBtn.style.fontSize = "12px";
-    toggleBtn.style.cursor = "pointer";
-    toggleBtn.style.border = "none";
-    toggleBtn.style.background = "#ff6b6b";
-    toggleBtn.style.color = "white";
-    toggleBtn.style.padding = "4px 12px";
-    toggleBtn.style.borderRadius = "5px";
-    toggleBtn.style.transition = "background 0.2s";
-    toggleBtn.onmouseenter = () => (toggleBtn.style.background = "#ee5a52");
-    toggleBtn.onmouseleave = () => (toggleBtn.style.background = "#ff6b6b");
+//     // Create the toggle button
+//     const toggleBtn = document.createElement("button");
+//     toggleBtn.textContent = "Hide";
+//     toggleBtn.className = "tidy-toggle-btn";
+//     toggleBtn.style.marginLeft = "12px";
+//     toggleBtn.style.fontSize = "12px";
+//     toggleBtn.style.cursor = "pointer";
+//     toggleBtn.style.border = "none";
+//     toggleBtn.style.background = "#ff6b6b";
+//     toggleBtn.style.color = "white";
+//     toggleBtn.style.padding = "4px 12px";
+//     toggleBtn.style.borderRadius = "5px";
+//     toggleBtn.style.transition = "background 0.2s";
+//     toggleBtn.onmouseenter = () => (toggleBtn.style.background = "#ee5a52");
+//     toggleBtn.onmouseleave = () => (toggleBtn.style.background = "#ff6b6b");
 
-    toggleBtn.onclick = function (e) {
-      e.preventDefault();
-      const id = link.getAttribute("href");
-      // Toggle hidden state in storage
-      chrome.storage.sync.get({ modules: [] }, (data) => {
-        const modules = data.modules.map((m) =>
-          m.id === id ? { ...m, hidden: !m.hidden } : m
-        );
-        chrome.storage.sync.set({ modules }, () => {
-          applyHiddenModules(modules);
-        });
-      });
-    };
+//     toggleBtn.onclick = function (e) {
+//       e.preventDefault();
+//       const id = link.getAttribute("href");
+//       // Toggle hidden state in storage
+//       chrome.storage.sync.get({ modules: [] }, (data) => {
+//         const modules = data.modules.map((m) =>
+//           m.id === id ? { ...m, hidden: !m.hidden } : m
+//         );
+//         chrome.storage.sync.set({ modules }, () => {
+//           applyHiddenModules(modules);
+//         });
+//       });
+//     };
 
-    li.appendChild(toggleBtn);
-  });
-}
+//     li.appendChild(toggleBtn);
+//   });
+// }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "GET_MODULES") {
@@ -129,7 +129,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.action === "hide") {
           link.parentElement.style.display = "none";
         } else {
-          link.parentElement.style.display = "flex";
+          link.parentElement.style.display = "";
         }
       }
     });
