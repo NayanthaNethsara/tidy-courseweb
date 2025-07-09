@@ -146,7 +146,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 window.addEventListener("load", () => {
   setTimeout(() => {
-    addToggleButtons();
     syncModulesWithStorage();
   }, 1200);
 });
