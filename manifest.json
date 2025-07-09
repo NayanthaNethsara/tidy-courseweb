@@ -3,6 +3,7 @@
   "description": "Declutter your Courseweb by hiding old modules and focusing on your current courses.",
   "version": "1.0",
   "manifest_version": 3,
+  "permissions": ["storage"],
   "host_permissions": ["https://courseweb.sliit.lk/*"],
   "content_scripts": [
     {

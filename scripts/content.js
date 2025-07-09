@@ -12,21 +12,116 @@ function getModuleLinks(coursesMenu) {
   return coursesMenu.querySelectorAll("li > a");
 }
 
-// Listen for messages from the popup
+// Get all module objects {id, name}
+function getAllModules() {
+  const coursesMenu = getCoursesMenu();
+  if (!coursesMenu) return [];
+  const moduleLinks = getModuleLinks(coursesMenu);
+  return Array.from(moduleLinks).map((link) => ({
+    id: link.getAttribute("href"),
+    name: link.textContent.trim(),
+  }));
+}
+
+// Apply hidden state from modules array
+function applyHiddenModules(modules) {
+  const coursesMenu = getCoursesMenu();
+  if (!coursesMenu) return;
+  const moduleLinks = getModuleLinks(coursesMenu);
+
+  moduleLinks.forEach((link) => {
+    const id = link.getAttribute("href");
+    const module = modules.find((m) => m.id === id);
+    if (module && module.hidden) {
+      link.parentElement.style.display = "none";
+    } else {
+      link.parentElement.style.display = "flex";
+    }
+  });
+}
+
+// Merge storage with fresh DOM, update storage, apply hidden state
+function syncModulesWithStorage() {
+  const modulesFromPage = getAllModules();
+
+  chrome.storage.sync.get({ modules: [] }, (data) => {
+    const oldList = data.modules;
+    // Fast lookup for hidden state
+    const hiddenMap = {};
+    oldList.forEach((m) => (hiddenMap[m.id] = m.hidden));
+
+    const merged = modulesFromPage.map((m) => ({
+      ...m,
+      hidden: hiddenMap[m.id] || false,
+    }));
+
+    chrome.storage.sync.set({ modules: merged }, () => {
+      applyHiddenModules(merged);
+    });
+  });
+}
+
+function addToggleButtons() {
+  const coursesMenu = getCoursesMenu();
+  if (!coursesMenu) return;
+  const moduleLinks = getModuleLinks(coursesMenu);
+
+  moduleLinks.forEach((link) => {
+    // Avoid adding the toggle multiple times
+    if (link.parentElement.querySelector(".tidy-toggle-btn")) return;
+
+    const li = link.parentElement;
+    li.style.display = "flex";
+    li.style.alignItems = "center";
+    li.style.justifyContent = "space-between";
+
+    // Create the toggle button
+    const toggleBtn = document.createElement("button");
+    toggleBtn.textContent = "Hide";
+    toggleBtn.className = "tidy-toggle-btn";
+    toggleBtn.style.marginLeft = "12px";
+    toggleBtn.style.fontSize = "12px";
+    toggleBtn.style.cursor = "pointer";
+    toggleBtn.style.border = "none";
+    toggleBtn.style.background = "#ff6b6b";
+    toggleBtn.style.color = "white";
+    toggleBtn.style.padding = "4px 12px";
+    toggleBtn.style.borderRadius = "5px";
+    toggleBtn.style.transition = "background 0.2s";
+    toggleBtn.onmouseenter = () => (toggleBtn.style.background = "#ee5a52");
+    toggleBtn.onmouseleave = () => (toggleBtn.style.background = "#ff6b6b");
+
+    toggleBtn.onclick = function (e) {
+      e.preventDefault();
+      const id = link.getAttribute("href");
+      // Toggle hidden state in storage
+      chrome.storage.sync.get({ modules: [] }, (data) => {
+        const modules = data.modules.map((m) =>
+          m.id === id ? { ...m, hidden: !m.hidden } : m
+        );
+        chrome.storage.sync.set({ modules }, () => {
+          applyHiddenModules(modules);
+        });
+      });
+    };
+
+    li.appendChild(toggleBtn);
+  });
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "GET_MODULES") {
+    // Not used for UI, but keeps API available
     const coursesMenu = getCoursesMenu();
     const moduleLinks = getModuleLinks(coursesMenu);
-    // Send back module list with name and an id (can use href as id)
     const modules = Array.from(moduleLinks).map((link) => ({
       id: link.getAttribute("href"),
       name: link.textContent.trim(),
     }));
     sendResponse({ modules });
-    return true; // Indicates async response
+    return true;
   }
   if (request.type === "TOGGLE_MODULE") {
-    // Hide/show the module with the given id (href)
     const coursesMenu = getCoursesMenu();
     const moduleLinks = getModuleLinks(coursesMenu);
     moduleLinks.forEach((link) => {
@@ -34,68 +129,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.action === "hide") {
           link.parentElement.style.display = "none";
         } else {
-          link.parentElement.style.display = "";
+          link.parentElement.style.display = "flex";
         }
       }
     });
     sendResponse({ status: "ok" });
     return true;
   }
-});
-
-function addToggleButtons() {
-  const coursesMenu = getCoursesMenu();
-  if (!coursesMenu) return;
-
-  const moduleLinks = getModuleLinks(coursesMenu);
-
-  moduleLinks.forEach((link) => {
-    // Avoid adding the toggle multiple times
-    if (link.parentElement.querySelector(".tidy-toggle-btn")) return;
-
-    // Create a toggle button
-    const toggleBtn = document.createElement("button");
-    toggleBtn.textContent = "Hide";
-    toggleBtn.className = "tidy-toggle-btn";
-    toggleBtn.style.marginLeft = "8px";
-    toggleBtn.style.fontSize = "12px";
-    toggleBtn.style.cursor = "pointer";
-
-    toggleBtn.onclick = function (e) {
-      e.preventDefault();
-      // Toggle the <li>'s display
-      if (link.parentElement.style.display === "none") {
-        link.parentElement.style.display = "";
-        toggleBtn.textContent = "Hide";
-      } else {
-        link.parentElement.style.display = "none";
-        // Optionally, change button to "Show" if you want it to remain visible
-        // toggleBtn.textContent = "Show";
-      }
-    };
-
-    link.parentElement.appendChild(toggleBtn);
-  });
-}
-
-function logMenuIfExists() {
-  const coursesMenu = getCoursesMenu();
-  if (coursesMenu) {
-    const moduleLinks = getModuleLinks(coursesMenu);
-    console.log("TidyCourseweb: Found modules:", moduleLinks.length);
-    moduleLinks.forEach((link, idx) => {
-      console.log(`Module ${idx + 1}:`, link.textContent.trim());
+  if (request.type === "SYNC_MODULES") {
+    chrome.storage.sync.get({ modules: [] }, (data) => {
+      applyHiddenModules(data.modules);
     });
-  } else {
-    console.log(
-      "TidyCourseweb: Courses menu not yet in DOM (may need to hover)."
-    );
+    sendResponse({ status: "ok" });
   }
-}
+});
 
 window.addEventListener("load", () => {
   setTimeout(() => {
-    logMenuIfExists();
     addToggleButtons();
+    syncModulesWithStorage();
   }, 1200);
 });

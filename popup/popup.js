@@ -7,15 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function requestModules(callback) {
-    getCurrentTabId((tabId) => {
-      chrome.tabs.sendMessage(tabId, { type: "GET_MODULES" }, (response) => {
-        if (response && response.modules) callback(response.modules, tabId);
-        else callback([], tabId);
-      });
-    });
-  }
-
   function sendToggle(tabId, id, action, callback) {
     chrome.tabs.sendMessage(
       tabId,
@@ -24,72 +15,70 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  requestModules((modules, tabId) => {
+  // Always read modules from storage to populate the popup
+  chrome.storage.sync.get({ modules: [] }, (data) => {
+    const modules = data.modules;
     const listEl = document.getElementById("module-list");
     listEl.innerHTML = ""; // Clear previous
 
-    modules.forEach((mod) => {
-      // Create <li>
-      const li = document.createElement("li");
+    getCurrentTabId((tabId) => {
+      modules.forEach((mod) => {
+        // Create <li>
+        const li = document.createElement("li");
 
-      // Create <span> for module name
-      const titleSpan = document.createElement("span");
-      titleSpan.className = "module-title";
-      titleSpan.textContent = mod.name;
+        // Create <span> for module name
+        const titleSpan = document.createElement("span");
+        titleSpan.className = "module-title";
+        titleSpan.textContent = mod.name;
+        if (mod.hidden) titleSpan.classList.add("dim");
 
-      // Create Hide/Show button
-      const btn = document.createElement("button");
-      btn.className = "tidy-toggle-btn";
-      btn.title = "Hide this module";
-      btn.textContent = "Hide";
+        // Create Hide/Show button
+        const btn = document.createElement("button");
+        btn.className = "tidy-toggle-btn";
+        btn.title = mod.hidden ? "Show this module" : "Hide this module";
+        btn.textContent = mod.hidden ? "Show" : "Hide";
+        btn.classList.add(mod.hidden ? "show-btn" : "hide-btn");
 
-      let hidden = false; // Track local state
+        btn.onclick = function () {
+          chrome.storage.sync.get({ modules: [] }, (data) => {
+            const updated = data.modules.map((m) =>
+              m.id === mod.id ? { ...m, hidden: !m.hidden } : m
+            );
+            chrome.storage.sync.set({ modules: updated }, () => {
+              btn.textContent = btn.textContent === "Hide" ? "Show" : "Hide";
+              btn.title =
+                btn.textContent === "Hide"
+                  ? "Hide this module"
+                  : "Show this module";
+              titleSpan.classList.toggle("dim");
+              btn.classList.toggle("hide-btn");
+              btn.classList.toggle("show-btn");
+              // Notify content script to update the DOM
+              chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
+            });
+          });
+        };
 
-      btn.onclick = function () {
-        hidden = !hidden;
-        if (hidden) {
-          btn.textContent = "Show";
-          btn.title = "Show this module";
-          titleSpan.classList.add("dim");
-          btn.classList.remove("hide-btn");
-          btn.classList.add("show-btn");
-          sendToggle(tabId, mod.id, "hide");
-        } else {
-          btn.textContent = "Hide";
-          btn.title = "Hide this module";
-          titleSpan.classList.remove("dim");
-          btn.classList.remove("show-btn");
-          btn.classList.add("hide-btn");
-          sendToggle(tabId, mod.id, "show");
-        }
-      };
-
-      // Set initial button style
-      btn.classList.add("hide-btn");
-
-      li.appendChild(titleSpan);
-      li.appendChild(btn);
-      listEl.appendChild(li);
+        li.appendChild(titleSpan);
+        li.appendChild(btn);
+        listEl.appendChild(li);
+      });
     });
   });
 
-  // Optionally, add handler for "Show All Modules" button
+  // "Show All" button handler
   const showAllBtn = document.getElementById("show-all");
   if (showAllBtn) {
     showAllBtn.onclick = function () {
-      const lis = document.querySelectorAll("#module-list li");
-      lis.forEach((li, i) => {
-        const btn = li.querySelector(".tidy-toggle-btn");
-        const titleSpan = li.querySelector(".module-title");
-        if (btn && btn.textContent === "Show") {
-          btn.textContent = "Hide";
-          btn.title = "Hide this module";
-          titleSpan.classList.remove("dim");
-          btn.classList.remove("show-btn");
-          btn.classList.add("hide-btn");
-          // Optionally update on page as well:
-          // sendToggle(tabId, moduleId, "show");
-        }
+      chrome.storage.sync.get({ modules: [] }, (data) => {
+        const updated = data.modules.map((m) => ({ ...m, hidden: false }));
+        chrome.storage.sync.set({ modules: updated }, () => {
+          // Optionally, refresh popup UI or notify content script
+          window.location.reload(); // simplest: just reload popup
+          getCurrentTabId((tabId) =>
+            chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" })
+          );
+        });
       });
     };
   }
