@@ -3,6 +3,12 @@
   "description": "Declutter your Courseweb by hiding old modules and focusing on your current courses.",
   "version": "1.0",
   "manifest_version": 3,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tidy-courseweb@yourdomain.com",
+      "strict_min_version": "109.0"
+    }
+  },
   "host_permissions": ["https://courseweb.sliit.lk/*"],
   "permissions": ["storage"],
   "icons": {
@@ -14,7 +20,8 @@
   "content_scripts": [
     {
       "matches": ["https://courseweb.sliit.lk/*"],
-      "js": ["scripts/content.js"]
+      "js": ["scripts/content.js"],
+      "run_at": "document_end"
     }
   ],
   "action": {
