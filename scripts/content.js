@@ -24,7 +24,7 @@ function getAllModules() {
 }
 
 // Apply hidden state from modules array
-function applyHiddenModules(modules) {
+function applyHiddenModules(modules, forceShow = false) {
   const coursesMenu = getCoursesMenu();
   if (!coursesMenu) return;
   const moduleLinks = getModuleLinks(coursesMenu);
@@ -32,10 +32,24 @@ function applyHiddenModules(modules) {
   moduleLinks.forEach((link) => {
     const id = link.getAttribute("href");
     const module = modules.find((m) => m.id === id);
-    if (module && module.hidden) {
-      link.parentElement.style.display = "none";
-    } else {
-      link.parentElement.style.display = "";
+    const li = link.parentElement;
+    const checkbox = li.querySelector(".tidy-toggle-checkbox");
+    
+    if (module) {
+      if (forceShow) {
+        // When checkboxes are visible, show all modules
+        li.style.display = "flex";
+        if (checkbox) checkbox.checked = !module.hidden;
+      } else {
+        // Normal behavior - respect hidden state
+        if (module.hidden) {
+          li.style.display = "none";
+          if (checkbox) checkbox.checked = false;
+        } else {
+          li.style.display = "flex";
+          if (checkbox) checkbox.checked = true;
+        }
+      }
     }
   });
 }
@@ -56,62 +70,115 @@ function syncModulesWithStorage() {
     }));
 
     chrome.storage.sync.set({ modules: merged }, () => {
-      applyHiddenModules(merged);
+      const coursesMenu = getCoursesMenu();
+      const masterToggle = coursesMenu?.querySelector(".tidy-master-toggle-btn");
+      applyHiddenModules(merged, masterToggle?.textContent === "ON");
     });
   });
 }
 
-// function addToggleButtons() {
-//   const coursesMenu = getCoursesMenu();
-//   if (!coursesMenu) return;
-//   const moduleLinks = getModuleLinks(coursesMenu);
+function addMasterToggleButton(coursesMenu) {
+  // Check if master toggle already exists
+  if (coursesMenu.querySelector(".tidy-master-toggle")) return;
+  
+  // Create master toggle container
+  const masterToggleContainer = document.createElement("div");
+  masterToggleContainer.className = "tidy-master-toggle";
+  masterToggleContainer.style.alignItems = "center";
 
-//   moduleLinks.forEach((link) => {
-//     // Avoid adding the toggle multiple times
-//     if (link.parentElement.querySelector(".tidy-toggle-btn")) return;
+  masterToggleContainer.style.borderBottom = "1px solid rgba(0,0,0,.2)";
+  masterToggleContainer.style.backgroundColor = "#f5f5f5";
+  
+  // Create button
+  const button = document.createElement("button");
+  button.style.boxShadow = "none";
+  button.style.border = "none";
+  button.style.outline = "none";
+  button.className = "tidy-master-toggle-btn"
+  button.textContent = "Edit";
+  button.style.fontSize = "12px";
+  button.style.margin = "12px 8px";
+  
+  // Add to container
+  masterToggleContainer.appendChild(button);
+  
+  // Insert at the top of the menu
+  coursesMenu.insertBefore(masterToggleContainer, coursesMenu.firstChild);
+  
+  // Toggle functionality
+  button.onclick = function() {
+    const checkboxesVisible = (button.textContent === "Done");
+    button.textContent = checkboxesVisible? "Edit" : "Done";
+    
+    chrome.storage.sync.get({ modules: [] }, (data) => {
+      applyHiddenModules(data.modules, !checkboxesVisible);
+    });
+    
+    const checkboxes = coursesMenu.querySelectorAll(".tidy-toggle-checkbox");
+    checkboxes.forEach(checkbox => {
+      checkbox.style.display = checkboxesVisible ? "none" : "block";
+      checkbox.parentElement.style.opacity = (!checkboxesVisible && !checkbox.checked) ? "0.5" : "1";
+    });
+    
+  };
+}
 
-//     const li = link.parentElement;
-//     li.style.display = "flex";
-//     li.style.alignItems = "center";
-//     li.style.justifyContent = "space-between";
+function addCheckboxes() {
+  const coursesMenu = getCoursesMenu();
+  if (!coursesMenu) return;
+  
+  // Add master toggle button first
+  addMasterToggleButton(coursesMenu);
+  
+  const moduleLinks = getModuleLinks(coursesMenu);
 
-//     // Create the toggle button
-//     const toggleBtn = document.createElement("button");
-//     toggleBtn.textContent = "Hide";
-//     toggleBtn.className = "tidy-toggle-btn";
-//     toggleBtn.style.marginLeft = "12px";
-//     toggleBtn.style.fontSize = "12px";
-//     toggleBtn.style.cursor = "pointer";
-//     toggleBtn.style.border = "none";
-//     toggleBtn.style.background = "#ff6b6b";
-//     toggleBtn.style.color = "white";
-//     toggleBtn.style.padding = "4px 12px";
-//     toggleBtn.style.borderRadius = "5px";
-//     toggleBtn.style.transition = "background 0.2s";
-//     toggleBtn.onmouseenter = () => (toggleBtn.style.background = "#ee5a52");
-//     toggleBtn.onmouseleave = () => (toggleBtn.style.background = "#ff6b6b");
+  moduleLinks.forEach((link) => {
+    // Avoid adding the checkbox multiple times
+    if (link.parentElement.querySelector(".tidy-toggle-checkbox")) return;
 
-//     toggleBtn.onclick = function (e) {
-//       e.preventDefault();
-//       const id = link.getAttribute("href");
-//       // Toggle hidden state in storage
-//       chrome.storage.sync.get({ modules: [] }, (data) => {
-//         const modules = data.modules.map((m) =>
-//           m.id === id ? { ...m, hidden: !m.hidden } : m
-//         );
-//         chrome.storage.sync.set({ modules }, () => {
-//           applyHiddenModules(modules);
-//         });
-//       });
-//     };
+    link.style.borderBottom = "none";
+    link.style.borderTop = "none";
+    
+    const li = link.parentElement;
+    li.style.display = "flex";
+    li.style.alignItems = "center";
+    li.style.justifyContent = "space-between";
+    li.style.borderBottom = "1px solid rgba(0,0,0,.2)";
 
-//     li.appendChild(toggleBtn);
-//   });
-// }
+    // Create the checkbox
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "tidy-toggle-checkbox";
+    checkbox.style.margin = "0 12px";
+    checkbox.style.cursor = "pointer";
+    checkbox.style.width = "16px";
+    checkbox.style.height = "16px";
+    checkbox.checked = true;
+    checkbox.style.display = "none";
+    
+    checkbox.onchange = function (e) {
+      e.preventDefault();
+      checkbox.parentElement.style.opacity = checkbox.checked ? "1" : "0.5"
+      const id = link.getAttribute("href");
+      // Toggle hidden state in storage
+      chrome.storage.sync.get({ modules: [] }, (data) => {
+        const modules = data.modules.map((m) =>
+          m.id === id ? { ...m, hidden: !checkbox.checked } : m
+        );
+        chrome.storage.sync.set({ modules }, () => {
+          const masterToggle = coursesMenu.querySelector(".tidy-master-toggle-btn");
+          applyHiddenModules(modules, masterToggle?.textContent === "Done");
+        });
+      });
+    };
+    
+    li.appendChild(checkbox);
+  });
+
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "GET_MODULES") {
-    // Not used for UI, but keeps API available
     const coursesMenu = getCoursesMenu();
     const moduleLinks = getModuleLinks(coursesMenu);
     const modules = Array.from(moduleLinks).map((link) => ({
@@ -138,7 +205,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   if (request.type === "SYNC_MODULES") {
     chrome.storage.sync.get({ modules: [] }, (data) => {
-      applyHiddenModules(data.modules);
+      const coursesMenu = getCoursesMenu();
+      const masterToggle = coursesMenu?.querySelector(".tidy-master-toggle-btn");
+      applyHiddenModules(data.modules, masterToggle?.textContent === "ON");
     });
     sendResponse({ status: "ok" });
   }
@@ -146,6 +215,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 window.addEventListener("load", () => {
   setTimeout(() => {
+    addCheckboxes();
     syncModulesWithStorage();
   }, 1200);
 });
