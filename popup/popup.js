@@ -49,11 +49,11 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.classList.add(mod.hidden ? "show-btn" : "hide-btn");
 
       btn.onclick = function () {
-        chrome.storage.sync.get({ modules: [] }, (data) => {
+        chrome.storage.local.get({ modules: [] }, (data) => {
           const updated = data.modules.map((m) =>
             m.id === mod.id ? { ...m, hidden: !m.hidden } : m
           );
-          chrome.storage.sync.set({ modules: updated }, () => {
+          chrome.storage.local.set({ modules: updated }, () => {
             refreshAndRender(tabId);
             chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
           });
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function refreshAndRender(tabId) {
-    chrome.storage.sync.get({ modules: [] }, (data) => {
+    chrome.storage.local.get({ modules: [] }, (data) => {
       renderModuleList(data.modules, tabId);
     });
   }
@@ -92,12 +92,12 @@ document.addEventListener("DOMContentLoaded", function () {
         if (showAllBtn) {
           showAllBtn.style.display = "";
           showAllBtn.onclick = function () {
-            chrome.storage.sync.get({ modules: [] }, (data) => {
+            chrome.storage.local.get({ modules: [] }, (data) => {
               const updated = data.modules.map((m) => ({
                 ...m,
                 hidden: false,
               }));
-              chrome.storage.sync.set({ modules: updated }, () => {
+              chrome.storage.local.set({ modules: updated }, () => {
                 refreshAndRender(tabId);
                 chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
               });

@@ -21,5 +21,11 @@
     "default_title": "TidyCourseweb",
     "default_popup": "popup/popup.html",
     "default_icon": "icons/icon32.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tidycourseweb@nayantha.me",
+      "strict_min_version": "115.0"
+    }
   }
 }
