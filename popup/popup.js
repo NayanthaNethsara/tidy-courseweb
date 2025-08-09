@@ -15,25 +15,40 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Fetch modules from local, fallback to sync if local empty
+  function fetchModules(callback) {
+    chrome.storage.local.get({ modules: [] }, (localData) => {
+      if (localData.modules && localData.modules.length > 0) {
+        callback(localData.modules);
+      } else {
+        // fallback to sync
+        chrome.storage.sync.get({ modules: [] }, (syncData) => {
+          callback(syncData.modules || []);
+        });
+      }
+    });
+  }
+
+  function saveModules(modules, callback) {
+    chrome.storage.local.set({ modules });
+    chrome.storage.sync.set({ modules }, callback);
+  }
+
   function renderModuleList(modules, tabId) {
     const listEl = document.getElementById("module-list");
     listEl.innerHTML = "";
 
-    // Get filter/sort controls
     const filter = document.getElementById("filter-select").value;
     const sort = document.getElementById("sort-select").value;
 
-    // Filter
     let filtered = modules;
     if (filter === "visible") filtered = modules.filter((m) => !m.hidden);
     if (filter === "hidden") filtered = modules.filter((m) => m.hidden);
 
-    // Sort
     if (sort === "az")
       filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
     if (sort === "za")
       filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
-    // Default: original order
 
     filtered.forEach((mod) => {
       const li = document.createElement("li");
@@ -49,11 +64,11 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.classList.add(mod.hidden ? "show-btn" : "hide-btn");
 
       btn.onclick = function () {
-        chrome.storage.sync.get({ modules: [] }, (data) => {
-          const updated = data.modules.map((m) =>
+        fetchModules((modules) => {
+          const updated = modules.map((m) =>
             m.id === mod.id ? { ...m, hidden: !m.hidden } : m
           );
-          chrome.storage.sync.set({ modules: updated }, () => {
+          saveModules(updated, () => {
             refreshAndRender(tabId);
             chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
           });
@@ -67,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function refreshAndRender(tabId) {
-    chrome.storage.sync.get({ modules: [] }, (data) => {
-      renderModuleList(data.modules, tabId);
+    fetchModules((modules) => {
+      renderModuleList(modules, tabId);
     });
   }
 
@@ -77,7 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
       getCurrentTabId((tabId) => {
         refreshAndRender(tabId);
 
-        // Set up filter/sort event listeners
         const filterSelect = document.getElementById("filter-select");
         const sortSelect = document.getElementById("sort-select");
         if (filterSelect) {
@@ -87,17 +101,13 @@ document.addEventListener("DOMContentLoaded", function () {
           sortSelect.onchange = () => refreshAndRender(tabId);
         }
 
-        // "Show All" button handler
         const showAllBtn = document.getElementById("show-all");
         if (showAllBtn) {
           showAllBtn.style.display = "";
           showAllBtn.onclick = function () {
-            chrome.storage.sync.get({ modules: [] }, (data) => {
-              const updated = data.modules.map((m) => ({
-                ...m,
-                hidden: false,
-              }));
-              chrome.storage.sync.set({ modules: updated }, () => {
+            fetchModules((modules) => {
+              const updated = modules.map((m) => ({ ...m, hidden: false }));
+              saveModules(updated, () => {
                 refreshAndRender(tabId);
                 chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
               });
@@ -106,7 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     } else {
-      // Not on Courseweb: show friendly message, hide module list & button
       const contentDiv = document.querySelector(".content");
       if (contentDiv) {
         contentDiv.innerHTML = `
