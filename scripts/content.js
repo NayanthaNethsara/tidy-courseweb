@@ -12,7 +12,6 @@ function getModuleLinks(coursesMenu) {
   return coursesMenu.querySelectorAll("li > a");
 }
 
-// Get all module objects {id, name}
 function getAllModules() {
   const coursesMenu = getCoursesMenu();
   if (!coursesMenu) return [];
@@ -23,7 +22,6 @@ function getAllModules() {
   }));
 }
 
-// Apply hidden state from modules array
 function applyHiddenModules(modules) {
   const coursesMenu = getCoursesMenu();
   if (!coursesMenu) return;
@@ -32,58 +30,59 @@ function applyHiddenModules(modules) {
   moduleLinks.forEach((link) => {
     const id = link.getAttribute("href");
     const module = modules.find((m) => m.id === id);
-    if (module && module.hidden) {
-      link.parentElement.style.display = "none";
+    link.parentElement.style.display = module?.hidden ? "none" : "";
+  });
+}
+
+function saveModules(modules) {
+  chrome.storage.local.set({ modules });
+  chrome.storage.sync.set({ modules });
+}
+
+function syncModulesWithStorage() {
+  const modulesFromPage = getAllModules();
+
+  // First try from local
+  chrome.storage.local.get({ modules: [] }, (localData) => {
+    let storedModules = localData.modules;
+
+    // If local empty, try from sync (backup restore)
+    if (!storedModules.length) {
+      chrome.storage.sync.get({ modules: [] }, (syncData) => {
+        storedModules = syncData.modules || [];
+        mergeAndSave(storedModules, modulesFromPage);
+      });
     } else {
-      link.parentElement.style.display = "";
+      mergeAndSave(storedModules, modulesFromPage);
     }
   });
 }
 
-// Merge storage with fresh DOM, update storage, apply hidden state
-function syncModulesWithStorage() {
-  const modulesFromPage = getAllModules();
+function mergeAndSave(storedModules, modulesFromPage) {
+  const hiddenMap = {};
+  storedModules.forEach((m) => (hiddenMap[m.id] = m.hidden));
 
-  chrome.storage.local.get({ modules: [] }, (data) => {
-    const oldList = data.modules;
-    // Fast lookup for hidden state
-    const hiddenMap = {};
-    oldList.forEach((m) => (hiddenMap[m.id] = m.hidden));
+  const merged = modulesFromPage.map((m) => ({
+    ...m,
+    hidden: hiddenMap[m.id] || false,
+  }));
 
-    const merged = modulesFromPage.map((m) => ({
-      ...m,
-      hidden: hiddenMap[m.id] || false,
-    }));
-
-    chrome.storage.local.set({ modules: merged }, () => {
-      applyHiddenModules(merged);
-    });
-  });
+  saveModules(merged);
+  applyHiddenModules(merged);
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "GET_MODULES") {
-    // Not used for UI, but keeps API available
-    const coursesMenu = getCoursesMenu();
-    const moduleLinks = getModuleLinks(coursesMenu);
-    const modules = Array.from(moduleLinks).map((link) => ({
-      id: link.getAttribute("href"),
-      name: link.textContent.trim(),
-    }));
-    sendResponse({ modules });
+    sendResponse({ modules: getAllModules() });
     return true;
   }
   if (request.type === "TOGGLE_MODULE") {
-    const coursesMenu = getCoursesMenu();
-    const moduleLinks = getModuleLinks(coursesMenu);
-    moduleLinks.forEach((link) => {
-      if (link.getAttribute("href") === request.id) {
-        if (request.action === "hide") {
-          link.parentElement.style.display = "none";
-        } else {
-          link.parentElement.style.display = "";
-        }
-      }
+    chrome.storage.local.get({ modules: [] }, (data) => {
+      const updated = data.modules.map((m) =>
+        m.id === request.id ? { ...m, hidden: request.action === "hide" } : m
+      );
+      saveModules(updated);
+      applyHiddenModules(updated);
     });
     sendResponse({ status: "ok" });
     return true;
@@ -99,5 +98,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 window.addEventListener("load", () => {
   setTimeout(() => {
     syncModulesWithStorage();
+    chrome.storage.local.get({ modules: [] }, (data) => {
+      console.table(data.modules);
+    });
   }, 1200);
 });
