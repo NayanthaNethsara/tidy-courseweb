@@ -1,49 +1,38 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Get the active tab
   function getCurrentTab(callback) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      if (tabs.length > 0) {
-        callback(tabs[0]);
-      }
+      if (tabs.length > 0) callback(tabs[0]);
     });
   }
 
-  function getCurrentTabId(callback) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      if (tabs.length > 0) {
-        callback(tabs[0].id);
-      }
+  // Fetch hidden module IDs from local storage
+  function fetchHiddenModules(callback) {
+    chrome.storage.local.get({ hiddenModules: [] }, (data) => {
+      callback(data.hiddenModules || []);
     });
   }
 
-  // Fetch modules from local, fallback to sync if local empty
-  function fetchModules(callback) {
-    chrome.storage.local.get({ modules: [] }, (localData) => {
-      if (localData.modules && localData.modules.length > 0) {
-        callback(localData.modules);
-      } else {
-        // fallback to sync
-        chrome.storage.sync.get({ modules: [] }, (syncData) => {
-          callback(syncData.modules || []);
-        });
-      }
-    });
+  // Save updated hidden module IDs to storage
+  function saveHiddenModules(hiddenIds, callback) {
+    chrome.storage.local.set({ hiddenModules: hiddenIds }, callback);
   }
 
-  function saveModules(modules, callback) {
-    chrome.storage.local.set({ modules });
-    chrome.storage.sync.set({ modules }, callback);
-  }
-
-  function renderModuleList(modules, tabId) {
+  // Render modules list in popup
+  function renderModuleList(modules, hiddenIds, tabId) {
     const listEl = document.getElementById("module-list");
     listEl.innerHTML = "";
 
     const filter = document.getElementById("filter-select").value;
     const sort = document.getElementById("sort-select").value;
 
-    let filtered = modules;
-    if (filter === "visible") filtered = modules.filter((m) => !m.hidden);
-    if (filter === "hidden") filtered = modules.filter((m) => m.hidden);
+    let filtered = modules.map((m) => ({
+      ...m,
+      hidden: hiddenIds.includes(m.id),
+    }));
+
+    if (filter === "visible") filtered = filtered.filter((m) => !m.hidden);
+    if (filter === "hidden") filtered = filtered.filter((m) => m.hidden);
 
     if (sort === "az")
       filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -52,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     filtered.forEach((mod) => {
       const li = document.createElement("li");
+
       const titleSpan = document.createElement("span");
       titleSpan.className = "module-title";
       titleSpan.textContent = mod.name;
@@ -64,14 +54,17 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.classList.add(mod.hidden ? "show-btn" : "hide-btn");
 
       btn.onclick = function () {
-        fetchModules((modules) => {
-          const updated = modules.map((m) =>
-            m.id === mod.id ? { ...m, hidden: !m.hidden } : m
-          );
-          saveModules(updated, () => {
-            refreshAndRender(tabId);
-            chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
-          });
+        let updatedHiddenIds;
+        if (mod.hidden) {
+          updatedHiddenIds = hiddenIds.filter((id) => id !== mod.id);
+        } else {
+          updatedHiddenIds = [...hiddenIds, mod.id];
+        }
+
+        saveHiddenModules(updatedHiddenIds, () => {
+          renderModuleList(modules, updatedHiddenIds, tabId);
+          // Notify content script to apply changes
+          chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
         });
       };
 
@@ -82,40 +75,23 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function refreshAndRender(tabId) {
-    fetchModules((modules) => {
-      renderModuleList(modules, tabId);
+    // Fetch modules from content script
+    chrome.tabs.sendMessage(tabId, { type: "GET_MODULES" }, (response) => {
+      if (!response || !response.modules) return;
+
+      fetchHiddenModules((hiddenIds) => {
+        renderModuleList(response.modules, hiddenIds, tabId);
+      });
     });
   }
 
+  // Initialize popup
   getCurrentTab((tab) => {
-    if (tab && tab.url && tab.url.startsWith("https://courseweb.sliit.lk/")) {
-      getCurrentTabId((tabId) => {
-        refreshAndRender(tabId);
-
-        const filterSelect = document.getElementById("filter-select");
-        const sortSelect = document.getElementById("sort-select");
-        if (filterSelect) {
-          filterSelect.onchange = () => refreshAndRender(tabId);
-        }
-        if (sortSelect) {
-          sortSelect.onchange = () => refreshAndRender(tabId);
-        }
-
-        const showAllBtn = document.getElementById("show-all");
-        if (showAllBtn) {
-          showAllBtn.style.display = "";
-          showAllBtn.onclick = function () {
-            fetchModules((modules) => {
-              const updated = modules.map((m) => ({ ...m, hidden: false }));
-              saveModules(updated, () => {
-                refreshAndRender(tabId);
-                chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
-              });
-            });
-          };
-        }
-      });
-    } else {
+    if (
+      !tab ||
+      !tab.url ||
+      !tab.url.startsWith("https://courseweb.sliit.lk/")
+    ) {
       const contentDiv = document.querySelector(".content");
       if (contentDiv) {
         contentDiv.innerHTML = `
@@ -127,6 +103,29 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       const showAllBtn = document.getElementById("show-all");
       if (showAllBtn) showAllBtn.style.display = "none";
+      return;
     }
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const tabId = tabs[0].id;
+
+      refreshAndRender(tabId);
+
+      const filterSelect = document.getElementById("filter-select");
+      const sortSelect = document.getElementById("sort-select");
+      if (filterSelect) filterSelect.onchange = () => refreshAndRender(tabId);
+      if (sortSelect) sortSelect.onchange = () => refreshAndRender(tabId);
+
+      const showAllBtn = document.getElementById("show-all");
+      if (showAllBtn) {
+        showAllBtn.style.display = "";
+        showAllBtn.onclick = function () {
+          saveHiddenModules([], () => {
+            refreshAndRender(tabId);
+            chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
+          });
+        };
+      }
+    });
   });
 });

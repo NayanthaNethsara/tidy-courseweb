@@ -1,3 +1,4 @@
+// ===== Helper Functions =====
 function getCoursesMenu() {
   const dropdown = document.querySelector(
     'li.dropdown > a.dropdown-toggle[title="My courses"]'
@@ -12,6 +13,7 @@ function getModuleLinks(coursesMenu) {
   return coursesMenu.querySelectorAll("li > a");
 }
 
+// Get all module objects {id, name}
 function getAllModules() {
   const coursesMenu = getCoursesMenu();
   if (!coursesMenu) return [];
@@ -22,84 +24,59 @@ function getAllModules() {
   }));
 }
 
-function applyHiddenModules(modules) {
+// Apply hidden modules by IDs
+function applyHiddenModules(hiddenIds) {
   const coursesMenu = getCoursesMenu();
   if (!coursesMenu) return;
-  const moduleLinks = getModuleLinks(coursesMenu);
 
+  const moduleLinks = getModuleLinks(coursesMenu);
   moduleLinks.forEach((link) => {
     const id = link.getAttribute("href");
-    const module = modules.find((m) => m.id === id);
-    link.parentElement.style.display = module?.hidden ? "none" : "";
+    link.parentElement.style.display = hiddenIds.includes(id) ? "none" : "";
   });
 }
 
-function saveModules(modules) {
-  chrome.storage.local.set({ modules });
-  chrome.storage.sync.set({ modules });
-}
-
+// Sync hidden state on page load
 function syncModulesWithStorage() {
-  const modulesFromPage = getAllModules();
-
-  // First try from local
-  chrome.storage.local.get({ modules: [] }, (localData) => {
-    let storedModules = localData.modules;
-
-    // If local empty, try from sync (backup restore)
-    if (!storedModules.length) {
-      chrome.storage.sync.get({ modules: [] }, (syncData) => {
-        storedModules = syncData.modules || [];
-        mergeAndSave(storedModules, modulesFromPage);
-      });
-    } else {
-      mergeAndSave(storedModules, modulesFromPage);
-    }
+  chrome.storage.local.get({ hiddenModules: [] }, (data) => {
+    applyHiddenModules(data.hiddenModules);
   });
 }
 
-function mergeAndSave(storedModules, modulesFromPage) {
-  const hiddenMap = {};
-  storedModules.forEach((m) => (hiddenMap[m.id] = m.hidden));
-
-  const merged = modulesFromPage.map((m) => ({
-    ...m,
-    hidden: hiddenMap[m.id] || false,
-  }));
-
-  saveModules(merged);
-  applyHiddenModules(merged);
-}
-
+// ===== Message Listener =====
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "GET_MODULES") {
-    sendResponse({ modules: getAllModules() });
+    const modules = getAllModules();
+    sendResponse({ modules });
     return true;
   }
+
   if (request.type === "TOGGLE_MODULE") {
-    chrome.storage.local.get({ modules: [] }, (data) => {
-      const updated = data.modules.map((m) =>
-        m.id === request.id ? { ...m, hidden: request.action === "hide" } : m
-      );
-      saveModules(updated);
-      applyHiddenModules(updated);
+    chrome.storage.local.get({ hiddenModules: [] }, (data) => {
+      let updated = data.hiddenModules;
+
+      if (request.action === "hide") {
+        if (!updated.includes(request.id)) updated.push(request.id);
+      } else if (request.action === "show") {
+        updated = updated.filter((id) => id !== request.id);
+      }
+
+      chrome.storage.local.set({ hiddenModules: updated }, () => {
+        applyHiddenModules(updated);
+        sendResponse({ status: "ok" });
+      });
     });
-    sendResponse({ status: "ok" });
-    return true;
+    return true; // async response
   }
+
   if (request.type === "SYNC_MODULES") {
-    chrome.storage.local.get({ modules: [] }, (data) => {
-      applyHiddenModules(data.modules);
-    });
+    syncModulesWithStorage();
     sendResponse({ status: "ok" });
   }
 });
 
+// ===== Run on page load =====
 window.addEventListener("load", () => {
-  setTimeout(() => {
-    syncModulesWithStorage();
-    chrome.storage.local.get({ modules: [] }, (data) => {
-      console.table(data.modules);
-    });
-  }, 1200);
+  // Delay to allow async DOM loading (if needed)
+  setTimeout(syncModulesWithStorage, 1200);
 });
