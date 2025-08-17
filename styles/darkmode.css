@@ -1,10 +1,18 @@
-/* Dark mode base */
+/* ========================================
+   ENHANCED MOODLE DARK MODE CSS
+   Comprehensive coverage with UX optimizations
+   ======================================== */
+
+/* Base dark mode class */
 .moodle-dark {
   background-color: #121212 !important;
   color: #e0e0e0 !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* General text */
+/* ========================================
+   GENERAL ELEMENTS & TEXT
+   ======================================== */
 .moodle-dark body,
 .moodle-dark p,
 .moodle-dark span,
@@ -12,111 +20,801 @@
 .moodle-dark li,
 .moodle-dark td,
 .moodle-dark th,
-.moodle-dark nav {
+.moodle-dark nav,
+.moodle-dark h1,
+.moodle-dark h2,
+.moodle-dark h3,
+.moodle-dark h4,
+.moodle-dark h5,
+.moodle-dark h6,
+.moodle-dark label,
+.moodle-dark legend,
+.moodle-dark .text-muted {
   background: transparent !important;
   color: #e0e0e0 !important;
 }
 
-/* Dark mode navbar */
+/* Headings with better contrast */
+.moodle-dark h1,
+.moodle-dark h2,
+.moodle-dark h3,
+.moodle-dark h4,
+.moodle-dark h5,
+.moodle-dark h6 {
+  color: #f5f5f5 !important;
+  border-bottom-color: #333 !important;
+}
+
+/* ========================================
+   NAVIGATION & HEADER
+   ======================================== */
+.moodle-dark .navbar,
 .moodle-dark .navbar-inner,
 .moodle-dark .navbar-inner .container-fluid,
 .moodle-dark .navbar-inner .nav,
 .moodle-dark .navbar-inner .nav li,
 .moodle-dark .navbar-inner .nav li a,
-.moodle-dark .navbar-inner .nav .dropdown-menu,
+.moodle-dark .navbar-inner .dropdown-menu,
 .moodle-dark .navbar-inner .brand,
-.moodle-dark .navbar-inner .btn-navbar {
-  background-color: #1e1e1e !important;
-  color: #f1f1f1 !important;
-  border-color: #333 !important;
-}
-
-/* Dropdown menu links */
-.moodle-dark .navbar-inner .dropdown-menu li a {
-  color: #f1f1f1 !important;
-}
-
-/* Hover effect */
-.moodle-dark .navbar-inner .nav li a:hover,
-.moodle-dark .navbar-inner .dropdown-menu li a:hover {
-  background-color: #333 !important;
-  color: #fff !important;
-}
-
-/* Navbar / Header */
-.moodle-dark .navbar,
+.moodle-dark .navbar-inner .btn-navbar,
 .moodle-dark #page-header,
 .moodle-dark .navbar-light,
-.moodle-dark .dropdown-menu {
+.moodle-dark .navbar-nav,
+.moodle-dark .nav-tabs,
+.moodle-dark .nav-pills {
   background-color: #1e1e1e !important;
   color: #f1f1f1 !important;
   border-color: #333 !important;
+  transition: all 0.2s ease;
 }
 
-/* Dark mode deep override */
-.moodle-dark .navbar-inner,
-.moodle-dark .navbar-inner * {
-  background-color: #1e1e1e !important;
-  color: #f1f1f1 !important;
-  border-color: #333 !important;
-}
-
-/* Cards (course modules, activities) */
-.moodle-dark .card,
-.moodle-dark .coursebox,
-.moodle-dark .activity,
-.moodle-dark .block {
-  background-color: #1c1c1c !important;
-  color: #f1f1f1 !important;
-  border: 1px solid #333 !important;
-}
-
-/* Links */
-.moodle-dark a {
-  color: #82aaff !important;
-  background-color: #121212;
-}
-
-/* Buttons */
-.moodle-dark button,
-.moodle-dark input,
-.moodle-dark select,
-.moodle-dark textarea {
-  background-color: #2a2a2a !important;
-  color: #fff !important;
-  border: 1px solid #444 !important;
-}
-
-/* Tables */
-.moodle-dark table {
-  background: #1c1c1c !important;
-  color: #ddd !important;
-}
-.moodle-dark th,
-.moodle-dark td {
-  border-color: #444 !important;
-}
-
-/* Dropdowns, popups */
+/* Dropdown menu improvements */
 .moodle-dark .dropdown-menu,
-.moodle-dark .modal-content {
+.moodle-dark .navbar-inner .dropdown-menu li a {
   background-color: #1c1c1c !important;
-  color: #e0e0e0 !important;
-  border: 1px solid #333 !important;
-}
-
-/* Alerts, notifications */
-.moodle-dark .alert {
-  background-color: #222 !important;
   color: #f1f1f1 !important;
-  border-color: #444 !important;
+  border: 1px solid #333 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Fix Moodle "white box" issue */
+/* Enhanced hover effects */
+.moodle-dark .navbar-inner .nav li a:hover,
+.moodle-dark .navbar-inner .dropdown-menu li a:hover,
+.moodle-dark .nav-tabs li a:hover,
+.moodle-dark .nav-pills li a:hover {
+  background-color: #333 !important;
+  color: #fff !important;
+  transition: all 0.2s ease;
+}
+
+/* Active navigation states */
+.moodle-dark .nav-tabs .active a,
+.moodle-dark .nav-pills .active a {
+  background-color: #2a2a2a !important;
+  color: #82aaff !important;
+}
+
+/* ========================================
+   BREADCRUMBS & NAVIGATION AIDS
+   ======================================== */
+.moodle-dark .breadcrumb,
+.moodle-dark .breadcrumb-item,
+.moodle-dark .page-context-header {
+  background-color: #1a1a1a !important;
+  color: #ccc !important;
+  border-color: #333 !important;
+}
+
+.moodle-dark .breadcrumb a {
+  color: #82aaff !important;
+}
+
+.moodle-dark .breadcrumb-item::before {
+  color: #666 !important;
+}
+
+/* ========================================
+   CONTENT AREAS & LAYOUT
+   ======================================== */
 .moodle-dark #page,
 .moodle-dark #region-main,
 .moodle-dark #page-content,
-.moodle-dark #region-main-box {
+.moodle-dark #region-main-box,
+.moodle-dark .content-bank-container,
+.moodle-dark .block-region,
+.moodle-dark .course-content {
   background-color: #121212 !important;
   color: #e0e0e0 !important;
+}
+
+/* Sidebar and blocks */
+.moodle-dark .block,
+.moodle-dark .block .header,
+.moodle-dark .block .content,
+.moodle-dark #block-region-side-pre,
+.moodle-dark #block-region-side-post {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px !important;
+}
+
+.moodle-dark .block .header h2 {
+  color: #f1f1f1 !important;
+  background-color: #2a2a2a !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+/* ========================================
+   CARDS & COURSE ELEMENTS
+   ======================================== */
+.moodle-dark .card,
+.moodle-dark .coursebox,
+.moodle-dark .activity,
+.moodle-dark .section,
+.moodle-dark .course-section,
+.moodle-dark .activityinstance,
+.moodle-dark .mod-indent {
+  background-color: #1c1c1c !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease;
+}
+
+.moodle-dark .card:hover,
+.moodle-dark .coursebox:hover,
+.moodle-dark .activity:hover {
+  background-color: #222 !important;
+  border-color: #444 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Course section headers */
+.moodle-dark .section .sectionname,
+.moodle-dark .course-section .sectionname {
+  color: #82aaff !important;
+  background-color: #2a2a2a !important;
+  border-bottom: 2px solid #333 !important;
+}
+
+/* ========================================
+   FORMS & INPUT ELEMENTS
+   ======================================== */
+.moodle-dark button,
+.moodle-dark input,
+.moodle-dark select,
+.moodle-dark textarea,
+.moodle-dark .btn,
+.moodle-dark .form-control,
+.moodle-dark .custom-select {
+  background-color: #2a2a2a !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease;
+}
+
+.moodle-dark input:focus,
+.moodle-dark select:focus,
+.moodle-dark textarea:focus,
+.moodle-dark .form-control:focus {
+  background-color: #333 !important;
+  border-color: #82aaff !important;
+  box-shadow: 0 0 0 2px rgba(130, 170, 255, 0.2) !important;
+  outline: none !important;
+}
+
+/* Button variants */
+.moodle-dark .btn-primary {
+  background-color: #82aaff !important;
+  border-color: #82aaff !important;
+  color: #000 !important;
+}
+
+.moodle-dark .btn-secondary {
+  background-color: #444 !important;
+  border-color: #555 !important;
+  color: #fff !important;
+}
+
+.moodle-dark .btn-success {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+.moodle-dark .btn-danger {
+  background-color: #f44336 !important;
+  border-color: #f44336 !important;
+}
+
+/* Form groups and labels */
+.moodle-dark .form-group,
+.moodle-dark .fitem,
+.moodle-dark .form-item {
+  background: transparent !important;
+  color: #e0e0e0 !important;
+}
+
+.moodle-dark .form-label,
+.moodle-dark .col-form-label {
+  color: #f1f1f1 !important;
+  font-weight: 500 !important;
+}
+
+/* Fieldsets and legends */
+.moodle-dark fieldset {
+  background-color: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px !important;
+  color: #e0e0e0 !important;
+}
+
+.moodle-dark legend {
+  background-color: #2a2a2a !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #444 !important;
+  border-radius: 4px !important;
+  padding: 4px 12px !important;
+}
+
+/* Checkbox and radio button styling */
+.moodle-dark input[type="checkbox"],
+.moodle-dark input[type="radio"] {
+  background-color: #2a2a2a !important;
+  border: 2px solid #444 !important;
+  accent-color: #82aaff !important;
+}
+
+.moodle-dark input[type="checkbox"]:checked,
+.moodle-dark input[type="radio"]:checked {
+  background-color: #82aaff !important;
+  border-color: #82aaff !important;
+}
+
+.moodle-dark .form-check-label,
+.moodle-dark .checkbox label,
+.moodle-dark .radio label {
+  color: #e0e0e0 !important;
+  cursor: pointer !important;
+}
+
+/* File upload styling */
+.moodle-dark input[type="file"] {
+  background-color: #2a2a2a !important;
+  border: 2px dashed #444 !important;
+  border-radius: 6px !important;
+  padding: 20px !important;
+  color: #e0e0e0 !important;
+}
+
+.moodle-dark input[type="file"]:hover {
+  border-color: #82aaff !important;
+  background-color: #333 !important;
+}
+
+/* Form validation states */
+.moodle-dark .is-valid,
+.moodle-dark .form-control.is-valid {
+  border-color: #4caf50 !important;
+  background-color: #1c4532 !important;
+}
+
+.moodle-dark .is-invalid,
+.moodle-dark .form-control.is-invalid {
+  border-color: #f44336 !important;
+  background-color: #742a2a !important;
+}
+
+.moodle-dark .valid-feedback {
+  color: #4caf50 !important;
+}
+
+.moodle-dark .invalid-feedback {
+  color: #f44336 !important;
+}
+
+/* Form help text */
+.moodle-dark .form-text,
+.moodle-dark .help-block,
+.moodle-dark small.form-text {
+  color: #aaa !important;
+  background: transparent !important;
+}
+
+/* Range sliders */
+.moodle-dark input[type="range"] {
+  background: transparent !important;
+  accent-color: #82aaff !important;
+}
+
+.moodle-dark input[type="range"]::-webkit-slider-track {
+  background: #444 !important;
+  border-radius: 3px !important;
+}
+
+.moodle-dark input[type="range"]::-webkit-slider-thumb {
+  background: #82aaff !important;
+  border: none !important;
+}
+
+/* ========================================
+   TABLES & DATA DISPLAY
+   ======================================== */
+.moodle-dark table,
+.moodle-dark .table,
+.moodle-dark .generaltable {
+  background: #1c1c1c !important;
+  color: #ddd !important;
+  border-collapse: collapse !important;
+}
+
+.moodle-dark th,
+.moodle-dark td {
+  border-color: #444 !important;
+  background-color: transparent !important;
+  color: #ddd !important;
+  padding: 8px 12px !important;
+}
+
+.moodle-dark th {
+  background-color: #2a2a2a !important;
+  color: #f1f1f1 !important;
+  font-weight: 600 !important;
+}
+
+.moodle-dark tr:nth-child(even) {
+  background-color: #1a1a1a !important;
+}
+
+.moodle-dark tr:hover {
+  background-color: #252525 !important;
+  transition: background-color 0.2s ease;
+}
+
+/* ========================================
+   PAGE HEADERS & TITLES
+   ======================================== */
+/* Page titles and subtitles */
+.moodle-dark .page-header-headings,
+.moodle-dark .page-title,
+.moodle-dark #page-title,
+.moodle-dark .course-title,
+.moodle-dark .activity-header {
+  background-color: #1e1e1e !important;
+  color: #f5f5f5 !important;
+  border-bottom: 2px solid #333 !important;
+  padding: 16px 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.moodle-dark .page-header-headings h1,
+.moodle-dark .page-title h1,
+.moodle-dark .course-title h1 {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.moodle-dark .page-header-headings .lead,
+.moodle-dark .page-subtitle {
+  color: #ccc !important;
+  font-size: 1.1em !important;
+  margin-top: 8px !important;
+}
+
+/* User profile headers */
+.moodle-dark .userprofile .profile_tree,
+.moodle-dark .user-info-container,
+.moodle-dark .profile-header {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+  border-radius: 8px !important;
+  padding: 20px !important;
+}
+
+.moodle-dark .user-picture,
+.moodle-dark .userpicture {
+  border: 2px solid #444 !important;
+  border-radius: 50% !important;
+}
+
+.moodle-dark .username,
+.moodle-dark .user-fullname {
+  color: #f1f1f1 !important;
+  font-weight: 600 !important;
+}
+
+/* Course header elements */
+.moodle-dark .course-header,
+.moodle-dark .course-info-container,
+.moodle-dark .course-summary {
+  background-color: #1a1a1a !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+}
+
+.moodle-dark .course-image {
+  border-radius: 6px !important;
+  border: 1px solid #333 !important;
+}
+
+/* Header action buttons and controls */
+.moodle-dark .header-actions,
+.moodle-dark .page-header-actions,
+.moodle-dark .activity-actions {
+  background: transparent !important;
+}
+
+.moodle-dark .header-actions .btn,
+.moodle-dark .page-header-actions .btn,
+.moodle-dark .activity-actions .btn {
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+  color: #e0e0e0 !important;
+  margin-left: 8px !important;
+}
+
+.moodle-dark .header-actions .btn:hover,
+.moodle-dark .page-header-actions .btn:hover {
+  background-color: #333 !important;
+  border-color: #555 !important;
+}
+
+/* Edit mode toggle */
+.moodle-dark .editmode-switch,
+.moodle-dark .turn-editing-on,
+.moodle-dark .turn-editing-off {
+  background-color: #82aaff !important;
+  color: #000 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+}
+
+.moodle-dark .editmode-switch:hover {
+  background-color: #a5c7ff !important;
+}
+
+/* Site header and logo */
+.moodle-dark .site-name,
+.moodle-dark .logo {
+  color: #f1f1f1 !important;
+  background: transparent !important;
+}
+
+.moodle-dark .site-name a {
+  color: #f1f1f1 !important;
+  text-decoration: none !important;
+}
+
+/* Header search */
+.moodle-dark .header-search,
+.moodle-dark .search-input-container {
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+  border-radius: 20px !important;
+}
+
+.moodle-dark .header-search input {
+  background: transparent !important;
+  border: none !important;
+  color: #e0e0e0 !important;
+}
+
+.moodle-dark .header-search .btn {
+  background: transparent !important;
+  border: none !important;
+  color: #82aaff !important;
+}
+
+/* ========================================
+   MODALS & POPUPS
+   ======================================== */
+.moodle-dark .modal-content,
+.moodle-dark .modal-header,
+.moodle-dark .modal-body,
+.moodle-dark .modal-footer,
+.moodle-dark .popover,
+.moodle-dark .tooltip {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+.moodle-dark .modal-header {
+  border-bottom: 1px solid #333 !important;
+}
+
+.moodle-dark .modal-footer {
+  border-top: 1px solid #333 !important;
+}
+
+.moodle-dark .close {
+  color: #ccc !important;
+  opacity: 0.8 !important;
+}
+
+.moodle-dark .close:hover {
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+/* ========================================
+   ALERTS & NOTIFICATIONS
+   ======================================== */
+.moodle-dark .alert,
+.moodle-dark .notification,
+.moodle-dark .alert-info,
+.moodle-dark .alert-warning,
+.moodle-dark .alert-success,
+.moodle-dark .alert-danger {
+  background-color: #222 !important;
+  color: #f1f1f1 !important;
+  border-color: #444 !important;
+  border-radius: 6px !important;
+}
+
+.moodle-dark .alert-info {
+  background-color: #1a365d !important;
+  border-color: #2c5aa0 !important;
+  color: #bee3f8 !important;
+}
+
+.moodle-dark .alert-success {
+  background-color: #1c4532 !important;
+  border-color: #38a169 !important;
+  color: #c6f6d5 !important;
+}
+
+.moodle-dark .alert-warning {
+  background-color: #744210 !important;
+  border-color: #d69e2e !important;
+  color: #faf089 !important;
+}
+
+.moodle-dark .alert-danger {
+  background-color: #742a2a !important;
+  border-color: #e53e3e !important;
+  color: #fed7d7 !important;
+}
+
+/* ========================================
+   LINKS & INTERACTIVE ELEMENTS
+   ======================================== */
+.moodle-dark a {
+  color: #82aaff !important;
+  background-color: transparent !important;
+  transition: color 0.2s ease;
+}
+
+.moodle-dark a:hover {
+  color: #a5c7ff !important;
+  text-decoration: underline !important;
+}
+
+.moodle-dark a:visited {
+  color: #9c88ff !important;
+}
+
+/* Activity links and icons */
+.moodle-dark .activityicon,
+.moodle-dark .icon {
+  filter: brightness(1.2) contrast(1.1) !important;
+}
+
+/* ========================================
+   QUIZ & ASSESSMENT ELEMENTS
+   ======================================== */
+.moodle-dark .que,
+.moodle-dark .question,
+.moodle-dark .quiz-attempt,
+.moodle-dark .questionbank {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px !important;
+}
+
+.moodle-dark .que .info,
+.moodle-dark .question .info {
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+}
+
+.moodle-dark .que .content,
+.moodle-dark .question .content {
+  background-color: #1a1a1a !important;
+}
+
+/* ========================================
+   CALENDAR & DATE ELEMENTS
+   ======================================== */
+.moodle-dark .calendar-month,
+.moodle-dark .calendar-day,
+.moodle-dark .calendar-event,
+.moodle-dark .minicalendar {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
+
+.moodle-dark .calendar-day:hover {
+  background-color: #2a2a2a !important;
+}
+
+/* ========================================
+   FORUM & DISCUSSION ELEMENTS
+   ======================================== */
+.moodle-dark .forumpost,
+.moodle-dark .discussion,
+.moodle-dark .forum-post-container {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px !important;
+}
+
+.moodle-dark .forum-author-info {
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+}
+
+/* ========================================
+   GRADEBOOK & GRADING
+   ======================================== */
+.moodle-dark .gradeparent,
+.moodle-dark .gradeitem,
+.moodle-dark .user-grade {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
+
+.moodle-dark .grade-report-user,
+.moodle-dark .grade-report-overview {
+  background-color: #121212 !important;
+}
+
+/* ========================================
+   ACCESSIBILITY & FOCUS STATES
+   ======================================== */
+.moodle-dark *:focus {
+  outline: 2px solid #82aaff !important;
+  outline-offset: 2px !important;
+}
+
+.moodle-dark .sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ========================================
+   SCROLLBARS (Webkit browsers)
+   ======================================== */
+.moodle-dark ::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.moodle-dark ::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+}
+
+.moodle-dark ::-webkit-scrollbar-thumb {
+  background: #444 !important;
+  border-radius: 4px !important;
+}
+
+.moodle-dark ::-webkit-scrollbar-thumb:hover {
+  background: #555 !important;
+}
+
+/* ========================================
+   LOADING & PROGRESS INDICATORS
+   ======================================== */
+.moodle-dark .progress {
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+}
+
+.moodle-dark .progress-bar {
+  background-color: #82aaff !important;
+}
+
+.moodle-dark .spinner,
+.moodle-dark .loading {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* ========================================
+   RESPONSIVE IMPROVEMENTS
+   ======================================== */
+@media (max-width: 768px) {
+  .moodle-dark .navbar-inner .nav li a {
+    padding: 12px 16px !important;
+  }
+
+  .moodle-dark .card,
+  .moodle-dark .block {
+    margin-bottom: 12px !important;
+  }
+
+  .moodle-dark table {
+    font-size: 14px !important;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+  .moodle-dark {
+    background: white !important;
+    color: black !important;
+  }
+
+  .moodle-dark * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Dark mode for news items */
+.moodle-dark #page-my-index .block_news_items .content ul li {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  margin: 10px 0 !important;
+  padding: 6px 5px !important;
+}
+
+/* Dark mode for forum posts with IDs like yui_... */
+.moodle-dark li[id^="yui_"] {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+}
+
+/* Example: forms */
+.moodle-dark form,
+.moodle-dark form input,
+.moodle-dark form textarea,
+.moodle-dark form select {
+  background-color: #2a2a2a !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+}
+
+/* Example: headers */
+.moodle-dark h1,
+.moodle-dark h2,
+.moodle-dark h3,
+.moodle-dark h4,
+.moodle-dark h5,
+.moodle-dark h6 {
+  color: #f5f5f5 !important;
+}
+@media screen and (min-width: 768px) {
+  .moodle-dark #page-header {
+    background: #1e1e1e !important;
+  }
+}
+
+@media screen and (min-width: 1700px) {
+  .moodle-dark #page-header {
+    background: #1e1e1e !important;
+  }
 }
