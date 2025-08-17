@@ -80,3 +80,45 @@ window.addEventListener("load", () => {
   // Delay to allow async DOM loading (if needed)
   setTimeout(syncModulesWithStorage, 1200);
 });
+
+console.log("[TidyCourseweb] content.js loaded");
+
+// Apply saved mode on load
+chrome.storage.sync.get("darkMode", ({ darkMode }) => {
+  if (darkMode) {
+    document.body.classList.add("moodle-dark");
+    console.log("[TidyCourseweb] Dark mode applied on load");
+  }
+});
+
+// Listen for popup toggle
+chrome.runtime.onMessage.addListener((message) => {
+  console.log("[TidyCourseweb] Message received:", message);
+  if (message.action === "enable-dark") {
+    document.body.classList.add("moodle-dark");
+    console.log("[TidyCourseweb] Dark mode enabled");
+  } else if (message.action === "disable-dark") {
+    document.body.classList.remove("moodle-dark");
+    console.log("[TidyCourseweb] Dark mode disabled");
+  }
+});
+
+// const navbarInner = document.querySelector(".navbar-inner");
+// if (navbarInner) {
+//   navbarInner.style.backgroundColor = "#1e1e1e";
+//   navbarInner.style.color = "#f1f1f1";
+
+//   // Update all links inside navbar
+//   const links = navbarInner.querySelectorAll("a");
+//   links.forEach((link) => {
+//     link.style.color = "#f1f1f1";
+//   });
+
+//   // Update dropdown menus
+//   const dropdowns = navbarInner.querySelectorAll(".dropdown-menu");
+//   dropdowns.forEach((menu) => {
+//     menu.style.backgroundColor = "#1e1e1e";
+//     const menuLinks = menu.querySelectorAll("a");
+//     menuLinks.forEach((link) => (link.style.color = "#f1f1f1"));
+//   });
+// }

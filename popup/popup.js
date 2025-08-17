@@ -128,4 +128,28 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  // --- Dark mode toggle ---
+  const toggle = document.getElementById("darkToggle");
+
+  // Load saved state
+  chrome.storage.sync.get("darkMode", ({ darkMode }) => {
+    toggle.checked = darkMode || false;
+  });
+
+  // Listen for toggle changes
+  toggle.addEventListener("change", async () => {
+    const enabled = toggle.checked;
+
+    // Save state
+    chrome.storage.sync.set({ darkMode: enabled });
+
+    // Tell content script to apply
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+      chrome.tabs.sendMessage(tab.id, {
+        action: enabled ? "enable-dark" : "disable-dark",
+      });
+    }
+  });
 });
