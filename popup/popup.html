@@ -1,51 +1,133 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>TidyCourseweb Popup</title>
+    <title>TidyCourseweb</title>
     <link rel="stylesheet" href="popup.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <div class="container">
-      <div class="header">
-        <div class="header-icon">
-          <img
-            src="../icons/icon128.png"
-            alt="TidyCourseweb logo"
-            width="36"
-            height="36"
-            style="vertical-align: middle"
-          />
-        </div>
-        <h3
-          style="
-            display: inline-block;
-            vertical-align: middle;
-            margin-left: 5px;
-          "
-        >
-          TidyCourseweb
-        </h3>
+    <div class="app-container">
+      <!-- Simplified tab bar with text-only design -->
+      <div class="tab-bar">
+        <button class="tab-button active" data-tab="modules">Modules</button>
+        <button class="tab-button" data-tab="settings">Settings</button>
+        <button class="tab-button" data-tab="beta">Beta</button>
       </div>
 
-      <div class="content">
-        <div class="controls">
-          <label class="switch">
-            <input type="checkbox" id="darkToggle" />
-            <span class="slider"></span>
-          </label>
-          <select id="filter-select">
-            <option value="all">Show: All</option>
-            <option value="visible">Visible Only</option>
-            <option value="hidden">Hidden Only</option>
-          </select>
-          <select id="sort-select">
-            <option value="default">Sort: Original</option>
-            <option value="az">Sort: A-Z</option>
-            <option value="za">Sort: Z-A</option>
-          </select>
+      <!-- Streamlined header without decorative elements -->
+      <div class="app-header">
+        <div class="header-content">
+          <div class="app-icon">
+            <img src="../icons/icon128.png" alt="TidyCourseweb" />
+          </div>
+          <div class="app-title">
+            <h1>TidyCourseweb</h1>
+            <p class="app-subtitle">Course Management</p>
+          </div>
         </div>
-        <button id="show-all">Show All Modules</button>
-        <ul id="module-list"></ul>
+      </div>
+
+      <!-- Tab Content Container -->
+      <div class="tab-content-container">
+        <!-- Modules Tab -->
+        <div class="tab-content active" id="modules-tab">
+          <div class="control-panel">
+            <div class="control-row">
+              <div class="ios-toggle">
+                <input type="checkbox" id="darkToggle" />
+                <label for="darkToggle" class="toggle-slider">
+                  <span class="toggle-button"></span>
+                </label>
+                <span class="toggle-label">Dark Mode</span>
+              </div>
+            </div>
+
+            <div class="control-row">
+              <div class="ios-select-group">
+                <select id="filter-select" class="ios-select">
+                  <option value="all">All Modules</option>
+                  <option value="visible">Visible Only</option>
+                  <option value="hidden">Hidden Only</option>
+                </select>
+                <select id="sort-select" class="ios-select">
+                  <option value="default">Original Order</option>
+                  <option value="az">A to Z</option>
+                  <option value="za">Z to A</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-section">
+            <button id="show-all" class="ios-button primary">
+              <span class="button-text">Show All Modules</span>
+            </button>
+          </div>
+
+          <div class="modules-container">
+            <ul id="module-list" class="module-list"></ul>
+          </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="settings-tab">
+          <div class="settings-section">
+            <h2 class="section-title">Preferences</h2>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Auto-hide modules</h3>
+                <p>Automatically hide completed modules</p>
+              </div>
+              <div class="ios-toggle">
+                <input type="checkbox" id="autoHideToggle" />
+                <label for="autoHideToggle" class="toggle-slider">
+                  <span class="toggle-button"></span>
+                </label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Notifications</h3>
+                <p>Get notified about course updates</p>
+              </div>
+              <div class="ios-toggle">
+                <input type="checkbox" id="notificationsToggle" />
+                <label for="notificationsToggle" class="toggle-slider">
+                  <span class="toggle-button"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beta Tab -->
+        <div class="tab-content" id="beta-tab">
+          <div class="beta-section">
+            <h2 class="section-title">Beta Features</h2>
+            <!-- Removed emoji icons for cleaner look -->
+            <div class="beta-feature">
+              <div class="feature-info">
+                <h3>Smart Sorting</h3>
+                <p>AI-powered module organization</p>
+                <span class="beta-badge">Coming Soon</span>
+              </div>
+            </div>
+            <div class="beta-feature">
+              <div class="feature-info">
+                <h3>Progress Analytics</h3>
+                <p>Detailed course progress insights</p>
+                <span class="beta-badge">Beta</span>
+              </div>
+            </div>
+            <div class="beta-feature">
+              <div class="feature-info">
+                <h3>Focus Mode</h3>
+                <p>Hide distractions while studying</p>
+                <span class="beta-badge">Beta</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <script src="popup.js"></script>
