@@ -1,21 +1,39 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
+  // Tab switching functionality
+  const tabButtons = document.querySelectorAll(".tab-button");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const targetTab = button.getAttribute("data-tab");
+
+      // Remove active class from all tabs and contents
+      tabButtons.forEach((btn) => btn.classList.remove("active"));
+      tabContents.forEach((content) => content.classList.remove("active"));
+
+      // Add active class to clicked tab and corresponding content
+      button.classList.add("active");
+      document.getElementById(`${targetTab}-tab`).classList.add("active");
+    });
+  });
+
   // Get the active tab
   function getCurrentTab(callback) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    window.chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs.length > 0) callback(tabs[0]);
     });
   }
 
   // Fetch hidden module IDs from local storage
   function fetchHiddenModules(callback) {
-    chrome.storage.local.get({ hiddenModules: [] }, (data) => {
+    window.chrome.storage.local.get({ hiddenModules: [] }, (data) => {
       callback(data.hiddenModules || []);
     });
   }
 
   // Save updated hidden module IDs to storage
   function saveHiddenModules(hiddenIds, callback) {
-    chrome.storage.local.set({ hiddenModules: hiddenIds }, callback);
+    window.chrome.storage.local.set({ hiddenModules: hiddenIds }, callback);
   }
 
   // Render modules list in popup
@@ -39,8 +57,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (sort === "za")
       filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
 
-    filtered.forEach((mod) => {
+    filtered.forEach((mod, index) => {
       const li = document.createElement("li");
+      li.style.animationDelay = `${(index + 1) * 0.05}s`;
 
       const titleSpan = document.createElement("span");
       titleSpan.className = "module-title";
@@ -53,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.textContent = mod.hidden ? "Show" : "Hide";
       btn.classList.add(mod.hidden ? "show-btn" : "hide-btn");
 
-      btn.onclick = function () {
+      btn.onclick = () => {
         let updatedHiddenIds;
         if (mod.hidden) {
           updatedHiddenIds = hiddenIds.filter((id) => id !== mod.id);
@@ -64,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
         saveHiddenModules(updatedHiddenIds, () => {
           renderModuleList(modules, updatedHiddenIds, tabId);
           // Notify content script to apply changes
-          chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
+          window.chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
         });
       };
 
@@ -76,13 +95,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function refreshAndRender(tabId) {
     // Fetch modules from content script
-    chrome.tabs.sendMessage(tabId, { type: "GET_MODULES" }, (response) => {
-      if (!response || !response.modules) return;
+    window.chrome.tabs.sendMessage(
+      tabId,
+      { type: "GET_MODULES" },
+      (response) => {
+        if (!response || !response.modules) return;
 
-      fetchHiddenModules((hiddenIds) => {
-        renderModuleList(response.modules, hiddenIds, tabId);
-      });
-    });
+        fetchHiddenModules((hiddenIds) => {
+          renderModuleList(response.modules, hiddenIds, tabId);
+        });
+      }
+    );
   }
 
   // Initialize popup
@@ -92,12 +115,13 @@ document.addEventListener("DOMContentLoaded", function () {
       !tab.url ||
       !tab.url.startsWith("https://courseweb.sliit.lk/")
     ) {
-      const contentDiv = document.querySelector(".content");
-      if (contentDiv) {
-        contentDiv.innerHTML = `
-          <div style="text-align:center; color:#AAA; padding:32px 0;">
-            <p><b>TidyCourseweb</b> works only on</p>
-            <p style="color:#888;">courseweb.sliit.lk</p>
+      const modulesTab = document.getElementById("modules-tab");
+      if (modulesTab) {
+        modulesTab.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; text-align: center; color: rgba(255, 255, 255, 0.6);">
+            <div style="font-size: 48px; margin-bottom: 16px;">🌐</div>
+            <h3 style="color: #ffffff; margin-bottom: 8px;">TidyCourseweb</h3>
+            <p>Only works on courseweb.sliit.lk</p>
           </div>
         `;
       }
@@ -106,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    window.chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tabId = tabs[0].id;
 
       refreshAndRender(tabId);
@@ -119,21 +143,21 @@ document.addEventListener("DOMContentLoaded", function () {
       const showAllBtn = document.getElementById("show-all");
       if (showAllBtn) {
         showAllBtn.style.display = "";
-        showAllBtn.onclick = function () {
+        showAllBtn.onclick = () => {
           saveHiddenModules([], () => {
             refreshAndRender(tabId);
-            chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
+            window.chrome.tabs.sendMessage(tabId, { type: "SYNC_MODULES" });
           });
         };
       }
     });
   });
 
-  // --- Dark mode toggle ---
+  // Dark mode toggle functionality
   const toggle = document.getElementById("darkToggle");
 
   // Load saved state
-  chrome.storage.sync.get("darkMode", ({ darkMode }) => {
+  window.chrome.storage.sync.get("darkMode", ({ darkMode }) => {
     toggle.checked = darkMode || false;
   });
 
@@ -142,14 +166,43 @@ document.addEventListener("DOMContentLoaded", function () {
     const enabled = toggle.checked;
 
     // Save state
-    chrome.storage.sync.set({ darkMode: enabled });
+    window.chrome.storage.sync.set({ darkMode: enabled });
 
     // Tell content script to apply
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await window.chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
     if (tab?.id) {
-      chrome.tabs.sendMessage(tab.id, {
+      window.chrome.tabs.sendMessage(tab.id, {
         action: enabled ? "enable-dark" : "disable-dark",
       });
     }
   });
+
+  // Initialize settings toggles
+  const autoHideToggle = document.getElementById("autoHideToggle");
+  const notificationsToggle = document.getElementById("notificationsToggle");
+
+  // Load settings
+  window.chrome.storage.sync.get(["autoHide", "notifications"], (result) => {
+    if (autoHideToggle) autoHideToggle.checked = result.autoHide || false;
+    if (notificationsToggle)
+      notificationsToggle.checked = result.notifications || false;
+  });
+
+  // Save settings
+  if (autoHideToggle) {
+    autoHideToggle.addEventListener("change", () => {
+      window.chrome.storage.sync.set({ autoHide: autoHideToggle.checked });
+    });
+  }
+
+  if (notificationsToggle) {
+    notificationsToggle.addEventListener("change", () => {
+      window.chrome.storage.sync.set({
+        notifications: notificationsToggle.checked,
+      });
+    });
+  }
 });
