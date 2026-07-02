@@ -1,8 +1,3 @@
-/* ========================================
-   ENHANCED MOODLE DARK MODE CSS
-   Comprehensive coverage with UX optimizations
-   ======================================== */
-
 /* Base dark mode class */
 .moodle-dark {
   background-color: #121212 !important;
@@ -10,9 +5,12 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ========================================
-   GENERAL ELEMENTS & TEXT
-   ======================================== */
+.caret {
+  color: #f1f1f1 !important;
+  border-color: #f1f1f1 !important;
+  border-top-color: #f1f1f1 !important;
+}
+
 .moodle-dark body,
 .moodle-dark p,
 .moodle-dark span,
@@ -818,3 +816,209 @@
     background: #1e1e1e !important;
   }
 }
+
+/* ========================================
+   ADDITIONAL DARK MODE ENHANCEMENTS
+   ======================================== */
+
+/* Logo image inversion for white backgrounds */
+.moodle-dark .logo img,
+.moodle-dark #header-logo img,
+.moodle-dark .site-name img {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Main header and navigation wrappers */
+.moodle-dark #main-header,
+.moodle-dark .lambda-nav {
+  background-color: #1e1e1e !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+/* Dropdown item styling (e.g. user action menu dropdowns) */
+.moodle-dark .dropdown-item {
+  color: #e0e0e0 !important;
+  background-color: transparent !important;
+}
+
+.moodle-dark .dropdown-item:hover,
+.moodle-dark .dropdown-item:focus,
+.moodle-dark .dropdown-item.active,
+.moodle-dark .dropdown-item:active {
+  background-color: #333 !important;
+  color: #ffffff !important;
+}
+
+.moodle-dark .dropdown-divider {
+  border-top: 1px solid #333 !important;
+  background-color: transparent !important;
+  margin: 4px 0 !important;
+}
+
+/* Outline buttons */
+.moodle-dark .btn-outline-secondary {
+  color: #e0e0e0 !important;
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+}
+
+.moodle-dark .btn-outline-secondary:hover,
+.moodle-dark .btn-outline-secondary:focus,
+.moodle-dark .btn-outline-secondary:active {
+  background-color: #333 !important;
+  border-color: #82aaff !important;
+  color: #ffffff !important;
+}
+
+/* Popover notification and messages region */
+.moodle-dark .popover-region-container {
+  background-color: #1c1c1c !important;
+  border: 1px solid #333 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.moodle-dark .popover-region-header-container {
+  background-color: #2a2a2a !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+.moodle-dark .popover-region-header-text {
+  color: #f1f1f1 !important;
+}
+
+.moodle-dark .popover-region-footer-container {
+  background-color: #2a2a2a !important;
+  border-top: 1px solid #333 !important;
+}
+
+.moodle-dark .popover-region-seeall-text {
+  color: #82aaff !important;
+}
+
+.moodle-dark .see-all-link {
+  color: #82aaff !important;
+}
+
+/* Navigation links */
+.moodle-dark .nav-link {
+  color: #e0e0e0 !important;
+}
+
+.moodle-dark .nav-link:hover,
+.moodle-dark .nav-link:focus {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.moodle-dark .nav-link.active,
+.moodle-dark .navbar-nav .active > .nav-link {
+  color: #82aaff !important;
+  background-color: rgba(130, 170, 255, 0.1) !important;
+}
+
+/* Pulse loading placeholders */
+.moodle-dark .bg-pulse-grey {
+  background-color: #2a2a2a !important;
+  animation: moodle-dark-pulse 1.5s infinite ease-in-out !important;
+}
+
+@keyframes moodle-dark-pulse {
+  0% {
+    background-color: #2a2a2a;
+  }
+  50% {
+    background-color: #383838;
+  }
+  100% {
+    background-color: #2a2a2a;
+  }
+}
+
+/* List group items */
+.moodle-dark .list-group-item {
+  background-color: #1c1c1c !important;
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
+
+.moodle-dark .list-group-item:hover {
+  background-color: #252525 !important;
+}
+
+/* Calendar month enhancements */
+.moodle-dark .maincalendar .calendarmonth td.today {
+  background-color: rgba(130, 170, 255, 0.15) !important;
+}
+
+.moodle-dark .maincalendar .calendarmonth td.today .day-number-circle {
+  background-color: #82aaff !important;
+  color: #000000 !important;
+}
+
+.moodle-dark .maincalendar .calendarmonth td.today .day-number {
+  color: #000000 !important;
+}
+
+.moodle-dark .calendarmonth td.dayblank {
+  background-color: #121212 !important;
+}
+
+/* Bootstrap helper backgrounds & utility classes overrides */
+.moodle-dark .bg-light {
+  background-color: #1c1c1c !important;
+}
+
+.moodle-dark .bg-white {
+  background-color: #1c1c1c !important;
+}
+
+.moodle-dark .text-dark {
+  color: #e0e0e0 !important;
+}
+
+/* Specific image inversion for user-uploaded HTML blocks (e.g. MFA, Support banners) */
+.moodle-dark .block_html img,
+.moodle-dark .block_html .content img {
+  filter: invert(1) hue-rotate(180deg) !important;
+  background-color: transparent !important;
+  border-radius: 4px !important;
+}
+
+/* Announcement date boxes and layout */
+.moodle-dark .block_news_items .post .date,
+.moodle-dark .block_news_items .date {
+  background-color: #2a2a2a !important;
+  color: #ff9f43 !important; /* Warm orange text for visibility and branding */
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 0.85em !important;
+  display: inline-block !important;
+  margin-bottom: 4px !important;
+}
+
+/* Specific link selectors to override theme stylesheet specificity */
+.moodle-dark a,
+.moodle-dark a:link,
+.moodle-dark .card-body a,
+.moodle-dark .block a,
+.moodle-dark #region-main a {
+  color: #82aaff !important;
+}
+
+.moodle-dark a:hover,
+.moodle-dark a:focus,
+.moodle-dark .card-body a:hover,
+.moodle-dark .block a:hover,
+.moodle-dark #region-main a:hover {
+  color: #a5c7ff !important;
+  text-decoration: underline !important;
+}
+
+.moodle-dark a:visited,
+.moodle-dark .card-body a:visited,
+.moodle-dark .block a:visited,
+.moodle-dark #region-main a:visited {
+  color: #c792ea !important;
+}
+
+

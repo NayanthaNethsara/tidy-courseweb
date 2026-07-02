@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (modulesTab) {
         modulesTab.innerHTML = `
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; text-align: center; color: rgba(255, 255, 255, 0.6);">
-            <div style="font-size: 48px; margin-bottom: 16px;">🌐</div>
+
             <h3 style="color: #ffffff; margin-bottom: 8px;">TidyCourseweb</h3>
             <p>Only works on courseweb.sliit.lk</p>
           </div>
